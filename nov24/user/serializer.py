@@ -88,7 +88,6 @@ class CreateInfluencerProfileSerializer(serializers.ModelSerializer):
         model = InfluencerProfile
         fields = '__all__'
         extra_kwargs = {
-            'post_account': {'required': True},
             'thumbnail': {'required': True},
             'contents': {'required': True},
             'min_price': {'required': True},

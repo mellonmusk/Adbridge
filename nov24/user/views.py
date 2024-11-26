@@ -1,5 +1,5 @@
 from django.contrib.auth import login
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,22 +39,32 @@ class LoginAPIView(knox_views.LoginView):
         return Response(response.data, status=status.HTTP_200_OK)
 
 
-class CreateAdvertiserProfileAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = CreateAdvertiserProfileSerializer(data= request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'data': serializer.data})
-        else:
-            return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+# 광고주
+class AdvertiserProfileAPIView(APIView): #전체 조회
     def get(self, request, *args, **kwargs):
         qs = AdvertiserProfile.objects.all()
         serializer = AdvertiserProfileSerializer(qs, many=True)
         return Response({'data': serializer.data})
 
-class AdvertiserProfileAPIView(APIView):
+
+class CreateAdvertiserProfileAPIView(APIView): # 생성, 조회, 수정
+    def post(self, request, *args, **kwargs):
+        account = kwargs.get('account')
+        user = get_object_or_404(CustomUser, nickname=account)
+        try:  # 해당 닉네임의 프로필이 이미 존재하는 경우
+            instance = AdvertiserProfile.objects.get(post_account=user)
+        except AdvertiserProfile.DoesNotExist:
+            instance = None
+
+        serializer = CreateAdvertiserProfileSerializer(instance=instance, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(post_account=user)
+            return Response({'data': serializer.data})
+        else:
+            return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     def get(self, request, *args, **kwargs):
         account = kwargs.get('account')
         instance = AdvertiserProfile.objects.get(post_account__nickname=account)
@@ -75,21 +85,31 @@ class AdvertiserProfileAPIView(APIView):
             return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CreateInfluencerProfileAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = CreateInfluencerProfileSerializer(data= request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'data': serializer.data})
-        else:
-            return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request, *args, **kwargs): #전체 생성된 목록 조회
+# 인플루언서
+class InfluencerProfileAPIView(APIView): #전체 조회
+    def get(self, request, *args, **kwargs): #전체 생성된 인플루언서 프로필 조회
         qs = InfluencerProfile.objects.all()
         serializer = InfluencerProfileSerializer(qs, many=True)
         return Response({'data': serializer.data})
-class InfluencerProfileAPIView(APIView):
-    def get(self, request, *args, **kwargs):
+
+class CreateInfluencerProfileAPIView(APIView): # 생성, 조회, 수정
+    def post(self, request, *args, **kwargs): #생성
+        account = kwargs.get('account')
+        user = get_object_or_404(CustomUser, nickname=account)
+        try: #해당 닉네임의 프로필이 이미 존재하는 경우
+            instance = InfluencerProfile.objects.get(post_account=user)
+        except InfluencerProfile.DoesNotExist:
+            instance = None
+
+        serializer = CreateInfluencerProfileSerializer(instance=instance, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(post_account=user)
+            return Response({'data': serializer.data})
+        else:
+            return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, *args, **kwargs): #조회
         account = kwargs.get('account')
         instance = InfluencerProfile.objects.get(post_account__nickname=account)
         serializer = InfluencerProfileSerializer(instance=instance, data=request.data)

@@ -2,12 +2,14 @@ from django.urls import path
 from . import views
 from knox.views import LogoutView
 urlpatterns = [
-    path('register/', views.CreateUserAPI.as_view()),
-    path('update-user/<int:pk>/', views.UpdateUserAPI.as_view()),
+    path('register-page/', views.SignUpPage.as_view(), name='sign-up-page'),
+    path('register/', views.CreateUserAPI.as_view(), name='create-user'),
+    #path('update-user/<str:account>/', views.UpdateUserAPI.as_view()),
     path('login/', views.LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
-    path('advertiser-profile/', views.CreateAdvertiserProfileAPIView.as_view()), # 생성 및 전체 조회
-    path('influencer-profile/', views.CreateInfluencerProfileAPIView.as_view()), # 생성 및 전체 조회
-    path('influencer-profile/<int:pk>/', views.InfluencerProfileAPIView.as_view()), # 조회 및 수정
-    path('advertiser-profile/<int:pk>/', views.AdvertiserProfileAPIView.as_view()),
+    path('advertiser-profile/', views.AdvertiserProfileAPIView.as_view(), name='advertiser-profile-list'), # 전체 조회
+    path('advertiser-profile/<str:account>/', views.CreateAdvertiserProfileAPIView.as_view(),  name='advertiser-profile-detail'), # 생성, 조회, 수정
+    path('influencer-profile/', views.InfluencerProfileAPIView.as_view(), name='influencer-profile-list'), # 전체 조회
+    path('influencer-profile/<str:account>/', views.CreateInfluencerProfileAPIView.as_view(),  name='influencer-profile-detail'), # 생성, 조회, 수정
+
 ]

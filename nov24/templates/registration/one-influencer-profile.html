@@ -1,0 +1,154 @@
+{% load rest_framework %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advertiser Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .profile-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 10px 0;
+        }
+        .fit-picture {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 10px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, textarea, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Profile of {{ account }}</h1>
+
+        {% if profile %}
+            <ul>
+                {% if profile.thumbnail %}
+                    <li><img class="fit-picture" src="{{ profile.thumbnail }}" alt="Profile Thumbnail"></li>
+                {% endif %}
+                <li><strong>Contents:</strong> {{ profile.contents }}</li>
+                <li><strong>Method:</strong> {{ profile.method|default:"Not provided" }}</li>
+                <li><strong>Minimum Price:</strong> {{ profile.min_price }}</li>
+                <li><strong>Maximum Price:</strong> {{ profile.max_price }}</li>
+                <li><strong>Description:</strong> {{ profile.description }}</li>
+                {% if profile.detail_1 %}
+                    <li><img class="fit-picture" src="{{ profile.detail_1 }}" alt="Detail 1"></li>
+                {% endif %}
+                {% if profile.detail_2 %}
+                    <li><img class="fit-picture" src="{{ profile.detail_2 }}" alt="Detail 2"></li>
+                {% endif %}
+            </ul>
+        {% else %}
+            <p>No profile found. Please create one.</p>
+        {% endif %}
+
+        <div class="form-container">
+            <form action="/user/influencer-profile/{{ account }}/" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="input-group">
+                    <label for="thumbnail">Thumbnail:</label>
+                    <input type="file" id="thumbnail" name="thumbnail">
+                </div>
+
+                <div class="input-group">
+                    <label for="contents">Contents:</label>
+                    <textarea id="contents" name="contents" placeholder="Enter the contents" required>{{ profile.contents|default:"" }}</textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="method">Method:</label>
+                    <input type="text" id="method" name="method" placeholder="Enter the method" value="{{ profile.method|default:"" }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="min_price">Minimum Price:</label>
+                    <input type="number" id="min_price" name="min_price" placeholder="Minimum price" value="{{ profile.min_price|default:"" }}" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="max_price">Maximum Price:</label>
+                    <input type="number" id="max_price" name="max_price" placeholder="Maximum price" value="{{ profile.max_price|default:"" }}" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" placeholder="Enter the description" required>{{ profile.description|default:"" }}</textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="detail_1">Detail 1:</label>
+                    <input type="file" id="detail_1" name="detail_1">
+                </div>
+
+                <div class="input-group">
+                    <label for="detail_2">Detail 2:</label>
+                    <input type="file" id="detail_2" name="detail_2">
+                </div>
+
+                <button type="submit">Save Profile</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+{% load rest_framework %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>One Advertiser Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .profile-container {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .profile-container h1 {
+            text-align: center;
+            color: #333;
+        }
+        .fit-picture {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 10px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .profile-details {
+            list-style: none;
+            padding: 0;
+        }
+        .profile-details li {
+            margin: 10px 0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .profile-details li:last-child {
+            border-bottom: none;
+        }
+        .profile-details span {
+            font-weight: bold;
+            color: #555;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, textarea, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Profile of {{ account }}</h1>
+
+        {% if profile.thumbnail %}
+            <img class="fit-picture" src="{{ profile.thumbnail }}" height="100" alt="Profile Thumbnail">
+        {% else %}
+            <p>No thumbnail available.</p>
+        {% endif %}
+
+        <ul class="profile-details">
+            <li>
+                <span>Address:</span> {{ profile.address|default:"Not provided" }}
+            </li>
+            <li>
+                <span>Website:</span>
+                {% if profile.website %}
+                    <a href="{{ profile.website }}" target="_blank">{{ profile.website }}</a>
+                {% else %}
+                    Not provided
+                {% endif %}
+            </li>
+        </ul>
+
+        <div class="form-container">
+            <form action="/user/advertiser-profile/{{ account }}/" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="input-group">
+                    <label for="thumbnail">Thumbnail:</label>
+                    <input type="file" id="thumbnail" name="thumbnail">
+                </div>
+
+                <div class="input-group">
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" placeholder="Enter address" value="{{ profile.address }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="website">Website:</label>
+                    <input type="url" id="website" name="website" placeholder="Enter website" value="{{ profile.website }}">
+                </div>
+
+                <button type="submit">Save Profile</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

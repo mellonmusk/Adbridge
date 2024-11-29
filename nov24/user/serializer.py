@@ -13,6 +13,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = '__all__'
 
+
     def validate(self, attrs):
         email = attrs.get('email', '').strip().lower()
         if CustomUser.objects.filter(email=email).exists():
@@ -67,3 +68,29 @@ class InfluencerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = InfluencerProfile
         fields = '__all__'
+
+
+
+class CreateAdvertiserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdvertiserProfile
+        fields = '__all__'
+        extra_kwargs = {
+            'website': {'required': True},
+            'address': {'required': True},
+            'thumbnail': {'required': True},
+        }
+
+
+
+class CreateInfluencerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfluencerProfile
+        fields = '__all__'
+        extra_kwargs = {
+            'thumbnail': {'required': True},
+            'contents': {'required': True},
+            'min_price': {'required': True},
+            'max_price': {'required': True},
+            'description': {'required': True}
+        }

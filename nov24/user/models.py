@@ -51,7 +51,7 @@ class CustomUser(AbstractBaseUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return self.nickname
 
     def has_module_perms(self, app_label):
         return True
@@ -62,25 +62,30 @@ class CustomUser(AbstractBaseUser):
 
 class InfluencerProfile(models.Model):
     #user = models.OneToOneField(CustomUser, on_delete=CASCADE, primary_key=True)
-    post_account = models.ForeignKey(CustomUser, on_delete=CASCADE, db_column="email_account")
-    thumbnail = models.ImageField(upload_to='profile/', default='product.svg')
-    contents = models.CharField(max_length=128)
-    method = models.CharField(max_length=128)
+    post_account = models.ForeignKey(CustomUser, on_delete=CASCADE, blank=True)
+    thumbnail = models.ImageField(upload_to='profile/', default='product.svg', blank=True)
+    contents = models.CharField(max_length=128, blank=True)
+    method = models.CharField(max_length=128, blank=True)
     min_price = models.PositiveIntegerField(default=0)
     max_price = models.PositiveIntegerField(default=0)
-    detail_1 = models.ImageField(upload_to='profile/', default='product.svg')
+    detail_1 = models.ImageField(upload_to='profile/', default='product.svg', blank=True)
     description = models.TextField(default='description of the person')
-    detail_2 = models.ImageField(upload_to='profile/', default='product.svg')
+    detail_2 = models.ImageField(upload_to='profile/', default='product.svg', blank=True)
 
     def __str__(self):
-        return self.contents
-
+        if self.post_account and hasattr(self.post_account, 'nickname'):
+            return self.post_account.nickname
+        else:
+            return self.contents
 
 class AdvertiserProfile(models.Model):
-    post_account = models.ForeignKey(CustomUser, on_delete=CASCADE, db_column="email_account")
+    post_account = models.ForeignKey(CustomUser, on_delete=CASCADE, blank=True)
     thumbnail = models.ImageField(upload_to='profile/', default='product.svg')
-    address = models.CharField(max_length=128)
+    address = models.CharField(max_length=128, blank=True)
     website = models.URLField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return self.address
+        if self.post_account and hasattr(self.post_account, 'nickname'):
+            return self.post_account.nickname
+        else:
+            return self.address

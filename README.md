@@ -1,0 +1,1 @@
+My first team project - It was a project done in only two weeks! And because we did not have that much time, we focused on implementing CRUD and filtering. I made APIs using django rest framework in this project.
